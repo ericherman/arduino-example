@@ -1,0 +1,7 @@
+Program the arduino without the IDE.
+
+Use "make" to build the firmware.
+
+Use "make upload" to push the firmware to the arduino.
+
+Use "serial_loopback.pl" to test the arduino's firmware.
