@@ -19,7 +19,7 @@ if (-e "/dev/ttyACM0") {
     $port = Device::SerialPort->new("/dev/ttyUSB0");
 }
 $port->databits(8);
-$port->baudrate(19200);
+$port->baudrate(115200);
 $port->parity("none");
 $port->stopbits(1);
 

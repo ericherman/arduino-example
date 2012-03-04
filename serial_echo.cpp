@@ -20,7 +20,7 @@ int main(void)
 	// set the LED on
 	digitalWrite(13, HIGH);
 
-	Serial.begin(19200);
+	Serial.begin(115200);
 
 	while (1) {
 		// loop until data available
