@@ -13,36 +13,43 @@ extern "C" void __cxa_pure_virtual(void)
 	while (true) ;
 }
 
-int main(void)
+void setup(void)
 {
-	init();
-
 	// set the LED on
 	pinMode(13, OUTPUT);
 	digitalWrite(13, HIGH);
 
 	Serial.begin(115200);
+}
 
+void loop(void)
+{
+	// loop until data available
+	if (Serial.available() == 0) {
+		return;
+	}
+	// read an available byte:
+	incoming_byte = Serial.read();
+
+	// Store it in the buffer
+	byte_buf[count++] = incoming_byte;
+
+	// if we recieve a carriage return or line feed
+	// or if we are about to over-run our buffer
+	if ((incoming_byte == 10 || incoming_byte == 13)
+	    || (count > (IN_BUF_SIZE - 1))) {
+		// then send the buffer contents back
+		Serial.print(byte_buf);
+		// and return the buffer index to start
+		count = 0;
+	}
+}
+
+int main(void)
+{
+	init();
+	setup();
 	while (1) {
-		// loop until data available
-		if (Serial.available() == 0) {
-			continue;
-		}
-
-		// read an available byte:
-		incoming_byte = Serial.read();
-
-		// Store it in the buffer
-		byte_buf[count++] = incoming_byte;
-
-		// if we recieve a carriage return or line feed
-		// or if we are about to over-run our buffer
-		if ((incoming_byte == 10 || incoming_byte == 13)
-		    || (count > (IN_BUF_SIZE - 1))) {
-			// then send the buffer contents back
-			Serial.print(byte_buf);
-			// and return the buffer index to start
-			count = 0;
-		}
+		loop();
 	}
 }
