@@ -4,6 +4,7 @@ APPNAME=serial_echo
 SOURCES=$(APPNAME).o
 
 ARDUINO_SOURCES_DIR=/usr/share/arduino/hardware/arduino/cores/arduino
+ARDUINO_VARIANT_DIR=/usr/share/arduino/hardware/arduino/variants/mega
 
 # port the arduino is connected to
 # and CPU type as defined by gcc and AVR-DUDE
@@ -36,7 +37,9 @@ CXX=avr-g++
 SHAREDFLAGS= -gstabs -Os \
 		-funsigned-char -funsigned-bitfields -fpack-struct \
 		-fshort-enums \
-		-I$(ARDUINO_SOURCES_DIR) -mmcu=$(GCC_MMCU) -DF_CPU=$(CLOCKSPEED)
+		-I$(ARDUINO_SOURCES_DIR) \
+		-I$(ARDUINO_VARIANT_DIR) \
+		-mmcu=$(GCC_MMCU) -DF_CPU=$(CLOCKSPEED)
 
 CFLAGS=-std=gnu99 -Wstrict-prototypes $(SHAREDFLAGS)
 CXXFLAGS=$(SHAREDFLAGS)
@@ -44,10 +47,16 @@ NOISYFLAGS=-Wall -Wextra -pedantic -Werror
 #NOISYFLAGS=
 CXX_WORKAROUND_FLAGS=-Wno-variadic-macros -Wno-ignored-qualifiers
 
-ARDUINOSOURCES= HardwareSerial.o \
-			pins_arduino.o \
+ARDUINO_SOURCES=CDC.o \
+			HardwareSerial.o \
+			HID.o \
+			IPAddress.o \
+			main.o \
+			new.o \
 			Print.o \
+			Stream.o \
 			Tone.o \
+			USBCore.o \
 			WInterrupts.o \
 			wiring_analog.o \
 			wiring.o \
@@ -84,7 +93,7 @@ upload: $(APPNAME).hex
 %.hex : %
 	avr-objcopy -O ihex -R .eeprom $< $@
 
-libarduinocore.a: $(ARDUINOSOURCES)
+libarduinocore.a: $(ARDUINO_SOURCES)
 	ar rc $@ $^
 
 $(APPNAME) : $(SOURCES) libarduinocore.a

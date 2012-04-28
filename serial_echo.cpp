@@ -1,5 +1,6 @@
 // modified from: http://www.windmeadow.com/node/38
-#include <WProgram.h>
+
+#include <Arduino.h>
 
 #define IN_BUF_SIZE 50
 
