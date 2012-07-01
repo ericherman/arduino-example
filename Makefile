@@ -1,10 +1,11 @@
 
 # the name of the main file and sources to be used
 APPNAME=serial_echo
-SOURCES=$(APPNAME).o
+SOURCES=$(APPNAME).o rot13.o
 
-ARDUINO_SOURCES_DIR=/usr/share/arduino/hardware/arduino/cores/arduino
-ARDUINO_VARIANT_DIR=/usr/share/arduino/hardware/arduino/variants/mega
+ARDUINO_ROOT=/usr/share/arduino
+ARDUINO_SOURCES_DIR=${ARDUINO_ROOT}/hardware/arduino/cores/arduino
+ARDUINO_VARIANT_DIR=${ARDUINO_ROOT}/hardware/arduino/variants/mega
 
 # port the arduino is connected to
 # and CPU type as defined by gcc and AVR-DUDE

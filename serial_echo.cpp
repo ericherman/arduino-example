@@ -1,6 +1,8 @@
 // modified from: http://www.windmeadow.com/node/38
 
+// See: http://arduino.cc/forum/index.php?topic=92364.0
 #include <Arduino.h>
+#include "rot13.h"
 
 #define IN_BUF_SIZE 50
 
@@ -31,6 +33,9 @@ void loop(void)
 	}
 	// read an available byte:
 	incoming_byte = Serial.read();
+
+	// transform incoming byte
+	incoming_byte = rotate_letter(incoming_byte);
 
 	// Store it in the buffer
 	byte_buf[count++] = incoming_byte;
