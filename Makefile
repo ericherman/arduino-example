@@ -1,7 +1,7 @@
 
 # the name of the main file and sources to be used
 APPNAME=example_firmware
-SOURCES=$(APPNAME).o rot13.o
+SOURCES=src/$(APPNAME).o src/rot13.o
 
 ARDUINO_ROOT=/usr/share/arduino
 ARDUINO_SOURCES_DIR=${ARDUINO_ROOT}/hardware/arduino/cores/arduino
@@ -84,7 +84,7 @@ all: $(APPNAME).hex
 	echo YAY
 
 clean:
-	rm -f *.o *.a *.hex
+	rm -f src/*.o *.o *.a *.hex
 
 upload: $(APPNAME).hex
 	stty -F $(PORT) hupcl # e.g. reset the arduino
