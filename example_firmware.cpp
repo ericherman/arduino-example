@@ -4,12 +4,6 @@
 #include <Arduino.h>
 #include "rot13.h"
 
-#define IN_BUF_SIZE 50
-
-char incoming_byte;
-char byte_buf[IN_BUF_SIZE];
-int count = 0;
-
 extern "C" void __cxa_pure_virtual(void)
 {
 	// error - loop forever (nice if you can attach a debugger)
@@ -32,23 +26,12 @@ void loop(void)
 		return;
 	}
 	// read an available byte:
-	incoming_byte = Serial.read();
+	char incoming_byte = Serial.read();
 
 	// transform incoming byte
 	incoming_byte = rotate_letter(incoming_byte);
 
-	// Store it in the buffer
-	byte_buf[count++] = incoming_byte;
-
-	// if we recieve a carriage return or line feed
-	// or if we are about to over-run our buffer
-	if ((incoming_byte == 10 || incoming_byte == 13)
-	    || (count > (IN_BUF_SIZE - 1))) {
-		// then send the buffer contents back
-		Serial.print(byte_buf);
-		// and return the buffer index to start
-		count = 0;
-	}
+	Serial.print(incoming_byte);
 }
 
 int main(void)
