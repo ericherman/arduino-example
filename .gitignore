@@ -1,4 +1,4 @@
-example_firmware
+*.bin
 *.o
 *.a
 *.hex
