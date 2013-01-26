@@ -1,6 +1,6 @@
 
 # the name of the main file and sources to be used
-APPNAME=serial_echo
+APPNAME=example_firmware
 SOURCES=$(APPNAME).o rot13.o
 
 ARDUINO_ROOT=/usr/share/arduino
