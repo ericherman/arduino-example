@@ -4,12 +4,6 @@
 #include <Arduino.h>
 #include "rot13.h"
 
-extern "C" void __cxa_pure_virtual(void)
-{
-	// error - loop forever (nice if you can attach a debugger)
-	while (true) ;
-}
-
 void setup(void)
 {
 	// set the LED on
