@@ -117,6 +117,7 @@ clean:
 	rm -f *.o *.a *.elf *.bin *.map
 
 upload: $(APPNAME).bin
+	echo 'The "make upload" is broken. I do not yet know why. --eric'
 	$(BOSSAC) -i -d --port=$(PORT) -U false -e -w -v -b $(APPNAME).bin -R
 
 %.bin : %.elf
