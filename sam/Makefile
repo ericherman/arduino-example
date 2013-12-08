@@ -12,10 +12,14 @@ ARDUINO_SAM_DIR=$(ARDUINO_ROOT)/hardware/arduino/sam
 ARDUINO_SOURCES_DIR=$(ARDUINO_SAM_DIR)/cores/arduino
 ARDUINO_VARIANT_DIR=$(ARDUINO_SAM_DIR)/variants/arduino_due_x
 
+# see: http://sourceforge.net/projects/b-o-s-s-a/
 BOSSAC=$(ARDUINO_ROOT)/build/linux/work/hardware/tools/bossac
 
+# see:  https://github.com/esden/summon-arm-toolchain
 #TOOLCHAIN_BIN_DIR=$(HOME)/sat/bin
+
 TOOLCHAIN_BIN_DIR=$(ARDUINO_ROOT)/build/linux/work/hardware/tools/g++_arm_none_eabi/bin
+
 CC=$(TOOLCHAIN_BIN_DIR)/arm-none-eabi-gcc
 CXX=$(TOOLCHAIN_BIN_DIR)/arm-none-eabi-g++
 OBJCOPY=$(TOOLCHAIN_BIN_DIR)/arm-none-eabi-objcopy
@@ -48,10 +52,10 @@ BROKENFLAGS= -DUSB_MANUFACTURER="Unknown" -DUSB_PRODUCT="Arduino Due"
 
 CFLAGS=-std=gnu99 -Wstrict-prototypes $(SHAREDFLAGS)
 CXXFLAGS=$(SHAREDFLAGS) -fno-rtti -fno-exceptions
+
 #NOISYFLAGS=-Wall -Wextra -pedantic -Werror
 NOISYFLAGS=-Wall -Wextra -Werror
 #NOISYFLAGS=
-CXX_WORKAROUND_FLAGS=-Wno-variadic-macros -Wno-ignored-qualifiers
 
 ARDINIO_SAM_OBJS=variant.o
 ARDUINO_CORE_OBJS=CDC.o \
@@ -84,7 +88,7 @@ ARDUINO_CORE_OBJS=CDC.o \
 	$(CC) $(CFLAGS) $(NOISYFLAGS) -c $< -o $@
 
 %.o : $(SRC_DIR)/%.cpp
-	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(CXX_WORKAROUND_FLAGS) -c $< -o $@
+	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.o : $(ARDUINO_SOURCES_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -125,6 +129,4 @@ $(APPNAME).elf : $(APP_OBJS) libarduinocore.a libarduinosam.a
 		-Wl,--gc-sections -Wl,--entry=Reset_Handler \
 		-Wl,--unresolved-symbols=report-all -Wl,--warn-common \
 		-Wl,--warn-section-align -Wl,--warn-unresolved-symbols \
-		-Wl,--start-group \
-		syscalls_sam3.o $^ \
-		-Wl,--end-group
+		-Wl,--start-group $^ -Wl,--end-group
