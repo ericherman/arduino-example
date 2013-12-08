@@ -1,12 +1,16 @@
 Program the arduino without the IDE.
 
+For avr based Arduinos (e.g.: Arduino Uno, Arduino Mega), cd to the avr
+directory.
+
 Use "make" to build the firmware.
 
 Use "make upload" to push the firmware to the arduino.
 
 Use "serial_loopback.pl" to test the arduino's firmware.
 
-If you do not have the requried toolchain (if avr-g++ is not in your path) see:
+If you do not have the requried avr toolchain
+(if avr-g++ is not in your path) see:
  https://github.com/ericherman/avr-toolchain-build
 
 If you do not have the arduino libraries installed, see:
