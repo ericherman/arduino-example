@@ -1,5 +1,17 @@
 Program the arduino without the IDE.
 
+
+License
+-------
+
+Licensed under the terms of the GNU Lesser General Public License
+(LGPL), version 3 or later.
+
+See COPYING.GPL3 and COPYING.LGPL3 for details.
+
+
+In short:
+--------
 For avr based Arduinos (e.g.: Arduino Uno, Arduino Mega), cd to the avr
 directory.
 
