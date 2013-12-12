@@ -117,7 +117,7 @@ clean:
 	rm -f *.o *.a *.elf *.bin *.map
 
 upload: $(APPNAME).bin
-	echo 'The "make upload" is broken. I do not yet know why. --eric'
+	./reset-device.rb $(PORT)
 	$(BOSSAC) -i -d --port=$(PORT) -U false -e -w -v -b $(APPNAME).bin -R
 
 %.bin : %.elf
@@ -133,7 +133,7 @@ $(APPNAME).elf : $(APP_OBJS) libarduinocore.a libarduinosam.a
 	$(CXX) $(NOISYFLAGS) \
 		-Os -Wl,--gc-sections -mcpu=cortex-m3 \
 		-T$(ARDUINO_VARIANT_DIR)/linker_scripts/gcc/flash.ld \
-		-Wl,-Map,example_firmware.map -o $@ \
+		-Wl,-Map,$(APPNAME).map -o $@ \
 		-L. -lm -lgcc -mthumb -Wl,--cref -Wl,--check-sections \
 		-Wl,--gc-sections -Wl,--entry=Reset_Handler \
 		-Wl,--unresolved-symbols=report-all -Wl,--warn-common \
