@@ -1,5 +1,6 @@
 # Makefile for building and flashing an Arduino Due
 
+# Copyright (C) 2013 Kendrick Shaw <kms15@case.edu>
 # Copyright (C) 2013 Eric Herman <eric@freesa.org>
 
 # This program is free software: you can redistribute it and/or modify
