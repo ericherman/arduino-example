@@ -15,6 +15,12 @@
 #include <Arduino.h>
 #include "rot13.h"
 
+#if ARDUINO_DUE_USB_NATIVE == 1
+#define SERIAL_OBJ SerialUSB
+#else
+#define SERIAL_OBJ Serial
+#endif
+
 unsigned long loop_counter;
 unsigned long blink_state;
 
@@ -24,7 +30,7 @@ void setup(void)
 	pinMode(13, OUTPUT);
 	digitalWrite(13, HIGH);
 
-	Serial.begin(115200);
+	SERIAL_OBJ.begin(115200);
 
 	loop_counter = 0;
 	blink_state = 0;
@@ -43,14 +49,14 @@ void loop(void)
 		blink_state = !blink_state;
 	}
 	// loop until data available
-	if (Serial.available() == 0) {
+	if (SERIAL_OBJ.available() == 0) {
 		return;
 	}
 	// read an available byte:
-	char incoming_byte = Serial.read();
+	char incoming_byte = SERIAL_OBJ.read();
 
 	// transform incoming byte
 	incoming_byte = rotate_letter(incoming_byte);
 
-	Serial.print(incoming_byte);
+	SERIAL_OBJ.print(incoming_byte);
 }

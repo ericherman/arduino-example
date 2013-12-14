@@ -13,8 +13,12 @@ APPNAME=example_firmware
 SRC_DIR=../src
 APP_OBJS=$(APPNAME).o rot13.o
 
+APP_FLAGS=-DARDUINO_DUE_USB_NATIVE=1
+
 # port the arduino is connected to
 PORT=ttyACM0
+BOSSAC_USB_NATIVE=true
+#BOSSAC_USB_NATIVE=false
 
 ARDUINO_ROOT=$(HOME)/arduino-1.5.5
 ARDUINO_SAM_DIR=$(ARDUINO_ROOT)/hardware/arduino/sam
@@ -94,10 +98,10 @@ ARDUINO_OBJS=main.o \
 		WString.o
 
 %.o : $(SRC_DIR)/%.c
-	$(CC) $(NOISYFLAGS) $(CFLAGS) -c $< -o $@
+	$(CC) $(NOISYFLAGS) $(CFLAGS) $(APP_FLAGS) -c $< -o $@
 
 %.o : $(SRC_DIR)/%.cpp
-	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(APP_FLAGS) -c $< -o $@
 
 %.o : $(ARDUINO_SOURCES_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -119,7 +123,7 @@ clean:
 
 upload: $(APPNAME).bin
 	./reset-device.rb $(PORT)
-	$(BOSSAC) -i -d --port=$(PORT) -U false -e -w -v -b $(APPNAME).bin -R
+	$(BOSSAC) -i -d --port=$(PORT) -U $(BOSSAC_USB_NATIVE) -e -w -v -b $(APPNAME).bin -R
 
 %.bin : %.elf
 	$(OBJCOPY) -O binary $< $@
