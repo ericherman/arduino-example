@@ -13,10 +13,15 @@ APPNAME=example_firmware
 SRC_DIR=../src
 APP_OBJS=$(APPNAME).o rot13.o
 
+# set this flag if you plan to communicate to the firmware running on
+# the ardiuno DUE using the "native" (not the "programming") port
 APP_FLAGS=-DARDUINO_DUE_USB_NATIVE=1
 
-# port the arduino is connected to
+# port the arduino is connected to while flashing new firmware
 PORT=ttyACM0
+
+# set the "BOSSAC_USB_NATIVE" to "false" if you plan to flash the firmware
+# using the "programming" (not the "native") port
 BOSSAC_USB_NATIVE=true
 #BOSSAC_USB_NATIVE=false
 
