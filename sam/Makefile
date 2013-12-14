@@ -16,23 +16,24 @@ APP_OBJS=$(APPNAME).o rot13.o
 # port the arduino is connected to
 PORT=ttyACM0
 
-ARDUINO_ROOT=$(HOME)/src/Arduino
+ARDUINO_ROOT=$(HOME)/arduino-1.5.5
 ARDUINO_SAM_DIR=$(ARDUINO_ROOT)/hardware/arduino/sam
 ARDUINO_SOURCES_DIR=$(ARDUINO_SAM_DIR)/cores/arduino
 ARDUINO_VARIANT_DIR=$(ARDUINO_SAM_DIR)/variants/arduino_due_x
-
-# see: http://sourceforge.net/projects/b-o-s-s-a/
-BOSSAC=$(ARDUINO_ROOT)/build/linux/work/hardware/tools/bossac
+ARDIUNO_TOOLS_DIR=$(ARDUINO_ROOT)/hardware/tools
 
 # see:  https://github.com/esden/summon-arm-toolchain
 #TOOLCHAIN_BIN_DIR=$(HOME)/sat/bin
 
-TOOLCHAIN_BIN_DIR=$(ARDUINO_ROOT)/build/linux/work/hardware/tools/g++_arm_none_eabi/bin
+TOOLCHAIN_BIN_DIR=$(ARDIUNO_TOOLS_DIR)/g++_arm_none_eabi/bin
 
 CC=$(TOOLCHAIN_BIN_DIR)/arm-none-eabi-gcc
 CXX=$(TOOLCHAIN_BIN_DIR)/arm-none-eabi-g++
 OBJCOPY=$(TOOLCHAIN_BIN_DIR)/arm-none-eabi-objcopy
 AR=$(TOOLCHAIN_BIN_DIR)/arm-none-eabi-ar
+
+# see: http://sourceforge.net/projects/b-o-s-s-a/
+BOSSAC=$(ARDIUNO_TOOLS_DIR)/bossac
 
 SHAREDFLAGS= -gstabs -Os \
 		-ffunction-sections \
@@ -50,14 +51,13 @@ SHAREDFLAGS= -gstabs -Os \
 		-DUSB_VID=0x2341 \
 		-DUSB_PID=0x003e \
 		-DUSBCON \
+		-DUSB_MANUFACTURER='"Unknown"' \
+		-DUSB_PRODUCT='"Arduino Due"' \
 		-I$(ARDUINO_SOURCES_DIR) \
 		-I$(ARDUINO_VARIANT_DIR) \
 		-I$(ARDUINO_SAM_DIR)/system/libsam \
 		-I$(ARDUINO_SAM_DIR)/system/CMSIS/CMSIS/Include \
 		-I$(ARDUINO_SAM_DIR)/system/CMSIS/Device/ATMEL
-
-BROKENFLAGS= -DUSB_MANUFACTURER="Unknown" -DUSB_PRODUCT="Arduino Due"
-
 
 CFLAGS=-std=gnu99 -Wstrict-prototypes $(SHAREDFLAGS)
 CXXFLAGS=$(SHAREDFLAGS) -fno-rtti -fno-exceptions
@@ -66,35 +66,35 @@ CXXFLAGS=$(SHAREDFLAGS) -fno-rtti -fno-exceptions
 NOISYFLAGS=-Wall -Wextra -Werror
 #NOISYFLAGS=
 
-ARDINIO_SAM_OBJS=variant.o
-ARDUINO_CORE_OBJS=CDC.o \
-			cortex_handlers.o \
-			cxxabi-compat.o \
-			HID.o \
-			hooks.o \
-			iar_calls_sam3.o \
-			IPAddress.o \
-			itoa.o \
-			main.o \
-			Print.o \
-			Reset.o \
-			RingBuffer.o \
-			Stream.o \
-			syscalls_sam3.o \
-			UARTClass.o \
-			USARTClass.o \
-			USBCore.o \
-			WInterrupts.o \
-			wiring_analog.o \
-			wiring.o \
-			wiring_digital.o \
-			wiring_pulse.o \
-			wiring_shift.o \
-			WMath.o \
-			WString.o
+ARDUINO_OBJS=main.o \
+		CDC.o \
+		cortex_handlers.o \
+		cxxabi-compat.o \
+		HID.o \
+		hooks.o \
+		iar_calls_sam3.o \
+		IPAddress.o \
+		itoa.o \
+		Print.o \
+		Reset.o \
+		RingBuffer.o \
+		Stream.o \
+		syscalls_sam3.o \
+		UARTClass.o \
+		USARTClass.o \
+		USBCore.o \
+		variant.o \
+		WInterrupts.o \
+		wiring_analog.o \
+		wiring.o \
+		wiring_digital.o \
+		wiring_pulse.o \
+		wiring_shift.o \
+		WMath.o \
+		WString.o
 
 %.o : $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) $(NOISYFLAGS) -c $< -o $@
+	$(CC) $(NOISYFLAGS) $(CFLAGS) -c $< -o $@
 
 %.o : $(SRC_DIR)/%.cpp
 	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) -c $< -o $@
@@ -124,13 +124,10 @@ upload: $(APPNAME).bin
 %.bin : %.elf
 	$(OBJCOPY) -O binary $< $@
 
-libarduinocore.a: $(ARDUINO_CORE_OBJS)
+libarduino.a: $(ARDUINO_OBJS)
 	$(AR) rcs $@ $^
 
-libarduinosam.a: $(ARDUINO_SAM_OBJS)
-	$(AR) rcs $@ $^
-
-$(APPNAME).elf : $(APP_OBJS) libarduinocore.a libarduinosam.a
+$(APPNAME).elf : $(APP_OBJS) libarduino.a
 	$(CXX) $(NOISYFLAGS) \
 		-Os -Wl,--gc-sections -mcpu=cortex-m3 \
 		-T$(ARDUINO_VARIANT_DIR)/linker_scripts/gcc/flash.ld \
@@ -139,4 +136,7 @@ $(APPNAME).elf : $(APP_OBJS) libarduinocore.a libarduinosam.a
 		-Wl,--gc-sections -Wl,--entry=Reset_Handler \
 		-Wl,--unresolved-symbols=report-all -Wl,--warn-common \
 		-Wl,--warn-section-align -Wl,--warn-unresolved-symbols \
-		-Wl,--start-group $^ -Wl,--end-group
+		-Wl,--start-group \
+		$^ \
+		$(ARDUINO_VARIANT_DIR)/libsam_sam3x8e_gcc_rel.a \
+		-Wl,--end-group

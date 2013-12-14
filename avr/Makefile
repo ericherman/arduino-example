@@ -58,11 +58,11 @@ NOISYFLAGS=-Wall -Wextra -pedantic -Werror
 #NOISYFLAGS=
 CXX_WORKAROUND_FLAGS=-Wno-variadic-macros -Wno-ignored-qualifiers
 
-ARDUINO_SOURCES=CDC.o \
+ARDUINO_SOURCES=main.o \
+			CDC.o \
 			HardwareSerial.o \
 			HID.o \
 			IPAddress.o \
-			main.o \
 			new.o \
 			Print.o \
 			Stream.o \
