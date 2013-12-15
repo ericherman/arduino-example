@@ -10,7 +10,7 @@
 
 # the name of the main file and sources to be used
 APPNAME=example_firmware
-SRC_DIR=../src
+SRC_DIR=../$(APPNAME)
 SOURCES=$(APPNAME).o rot13.o
 
 ARDUINO_ROOT=/usr/share/arduino

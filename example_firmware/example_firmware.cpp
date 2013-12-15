@@ -15,9 +15,15 @@
 #include <Arduino.h>
 #include "rot13.h"
 
-#if ARDUINO_DUE_USB_NATIVE == 1
+#ifdef _VARIANT_ARDUINO_DUE_X_
+#if ARDUINO_DUE_USB_PROGRAMMING == 1
+#define SERIAL_OBJ Serial
+#else // default to the NATIVE port
 #define SERIAL_OBJ SerialUSB
-#else
+#endif
+#endif
+
+#ifndef SERIAL_OBJ
 #define SERIAL_OBJ Serial
 #endif
 

@@ -12,4 +12,5 @@
 require 'serialport'
 port = ARGV[0] || "ttyACM0";
 device = "/dev/#{port}";
+puts "Forcing reset using 1200bps open/close on port #{device}"
 SerialPort.open(device, 1200) {|sp|}

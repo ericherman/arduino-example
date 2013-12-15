@@ -10,23 +10,28 @@
 
 # the name of the main file and sources to be used
 APPNAME=example_firmware
-SRC_DIR=../src
+
+SRC_DIR=../$(APPNAME)
+
+# manual dependencies
 APP_OBJS=$(APPNAME).o rot13.o
 
 # set this flag if you plan to communicate to the firmware running on
-# the ardiuno DUE using the "native" (not the "programming") port
-APP_FLAGS=-DARDUINO_DUE_USB_NATIVE=1
+# the ardiuno DUE using the "programming" (not the "native") port
+APP_FLAGS=-DARDUINO_DUE_USB_PROGRAMMING=0
+#APP_FLAGS=-DARDUINO_DUE_USB_PROGRAMMING=1
 
 # port the arduino is connected to while flashing new firmware
 PORT=ttyACM0
 
 # set the "BOSSAC_USB_NATIVE" to "false" if you plan to flash the firmware
 # using the "programming" (not the "native") port
-BOSSAC_USB_NATIVE=true
-#BOSSAC_USB_NATIVE=false
+BOSSAC_USB_NATIVE=false
+#BOSSAC_USB_NATIVE=true
 
 ARDUINO_ROOT=$(HOME)/arduino-1.5.5
 ARDUINO_SAM_DIR=$(ARDUINO_ROOT)/hardware/arduino/sam
+ARDUINO_SPI_DIR=$(ARDUINO_SAM_DIR)/libraries/SPI
 ARDUINO_SOURCES_DIR=$(ARDUINO_SAM_DIR)/cores/arduino
 ARDUINO_VARIANT_DIR=$(ARDUINO_SAM_DIR)/variants/arduino_due_x
 ARDIUNO_TOOLS_DIR=$(ARDUINO_ROOT)/hardware/tools
@@ -62,11 +67,15 @@ SHAREDFLAGS= -gstabs -Os \
 		-DUSBCON \
 		-DUSB_MANUFACTURER='"Unknown"' \
 		-DUSB_PRODUCT='"Arduino Due"' \
+		-I$(SRC_DIR) \
 		-I$(ARDUINO_SOURCES_DIR) \
 		-I$(ARDUINO_VARIANT_DIR) \
+		-I$(ARDUINO_SPI_DIR) \
+		-I$(ARDUINO_SPI_DIR)/utility \
 		-I$(ARDUINO_SAM_DIR)/system/libsam \
 		-I$(ARDUINO_SAM_DIR)/system/CMSIS/CMSIS/Include \
-		-I$(ARDUINO_SAM_DIR)/system/CMSIS/Device/ATMEL
+		-I$(ARDUINO_SAM_DIR)/system/CMSIS/Device/ATMEL \
+		-I$(ARDUINO_SOURCES_DIR)/avr
 
 CFLAGS=-std=gnu99 -Wstrict-prototypes $(SHAREDFLAGS)
 CXXFLAGS=$(SHAREDFLAGS) -fno-rtti -fno-exceptions
@@ -75,32 +84,40 @@ CXXFLAGS=$(SHAREDFLAGS) -fno-rtti -fno-exceptions
 NOISYFLAGS=-Wall -Wextra -Werror
 #NOISYFLAGS=
 
-ARDUINO_OBJS=main.o \
-		CDC.o \
+ARDUINO_MISC_OBJS=syscalls_sam3.o SPI.o
+
+ARDUINO_CORE_OBJS=itoa.o \
+		wiring.o \
 		cortex_handlers.o \
-		cxxabi-compat.o \
-		HID.o \
+		WInterrupts.o \
 		hooks.o \
+		wiring_shift.o \
+		wiring_analog.o \
 		iar_calls_sam3.o \
+		wiring_digital.o \
+		dtostrf.o \
+		WMath.o \
+		main.o \
 		IPAddress.o \
-		itoa.o \
-		Print.o \
+		USARTClass.o \
+		cxxabi-compat.o \
+		USBCore.o \
+		HID.o \
+		CDC.o \
 		Reset.o \
 		RingBuffer.o \
-		Stream.o \
-		syscalls_sam3.o \
 		UARTClass.o \
-		USARTClass.o \
-		USBCore.o \
-		variant.o \
-		WInterrupts.o \
-		wiring_analog.o \
-		wiring.o \
-		wiring_digital.o \
+		Stream.o \
+		WString.o \
+		Print.o \
 		wiring_pulse.o \
-		wiring_shift.o \
-		WMath.o \
-		WString.o
+		variant.o
+
+%.o : $(SRC_DIR)/%.ino
+	ln -sv $^ $(basename $(notdir $^)).cpp
+	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(APP_FLAGS) \
+		-c $(basename $(notdir $^)).cpp -o $@
+	rm -v $(basename $(notdir $^)).cpp
 
 %.o : $(SRC_DIR)/%.c
 	$(CC) $(NOISYFLAGS) $(CFLAGS) $(APP_FLAGS) -c $< -o $@
@@ -111,10 +128,16 @@ ARDUINO_OBJS=main.o \
 %.o : $(ARDUINO_SOURCES_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+%.o : $(ARDUINO_SOURCES_DIR)/avr/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 %.o : $(ARDUINO_SOURCES_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 %.o : $(ARDUINO_SOURCES_DIR)/USB/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+%.o : $(ARDUINO_SPI_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 %.o : $(ARDUINO_VARIANT_DIR)/%.cpp
@@ -133,10 +156,10 @@ upload: $(APPNAME).bin
 %.bin : %.elf
 	$(OBJCOPY) -O binary $< $@
 
-libarduino.a: $(ARDUINO_OBJS)
+libarduinocore.a: $(ARDUINO_CORE_OBJS)
 	$(AR) rcs $@ $^
 
-$(APPNAME).elf : $(APP_OBJS) libarduino.a
+$(APPNAME).elf : $(APP_OBJS) $(ARDUINO_MISC_OBJS) libarduinocore.a
 	$(CXX) $(NOISYFLAGS) \
 		-Os -Wl,--gc-sections -mcpu=cortex-m3 \
 		-T$(ARDUINO_VARIANT_DIR)/linker_scripts/gcc/flash.ld \
