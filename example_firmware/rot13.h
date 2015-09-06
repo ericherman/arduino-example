@@ -15,9 +15,9 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ROT13_H_
-#define _ROT13_H_
+#ifndef ROT13_H
+#define ROT13_H
 
 char rotate_letter(char c);
 
-#endif /* _ROT13_H_ */
+#endif /* ROT13_H */
