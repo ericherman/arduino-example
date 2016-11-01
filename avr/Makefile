@@ -33,6 +33,10 @@ AVRDUDE_MCU=atmega2560
 AVRDUDE_BAUD=115200
 endif
 
+# for "Uno" use:
+#AVRDUDE_STK=arduino
+#AVRDUDE_MCU=atmega328p
+
 #GCC_MMCU=atmega328p
 #AVRDUDE_MCU=atmega328p
 #AVRDUDE_STK=stk500v1
