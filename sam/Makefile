@@ -23,6 +23,8 @@ APP_FLAGS=-DARDUINO_DUE_USB_PROGRAMMING=0
 
 # port the arduino is connected to while flashing new firmware
 PORT=ttyACM0
+# This is linux specific
+RESET_PORT=stty -F /dev/$(PORT) 1200; sleep 1
 
 # set the "BOSSAC_USB_NATIVE" to "false" if you plan to flash the firmware
 # using the "programming" (not the "native") port
@@ -150,7 +152,8 @@ clean:
 	rm -f *.o *.a *.elf *.bin *.map
 
 upload: $(APPNAME).bin
-	./reset-device.rb $(PORT)
+	#./reset-device.rb $(PORT)
+	$(RESET_PORT)
 	$(BOSSAC) -i -d --port=$(PORT) -U $(BOSSAC_USB_NATIVE) -e -w -v -b $(APPNAME).bin -R
 
 %.bin : %.elf
