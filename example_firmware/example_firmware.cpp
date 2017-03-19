@@ -13,6 +13,7 @@
 */
 
 #include <Arduino.h>
+#include <HardwareSerial.h>
 #include "rot13.h"
 
 #ifdef _VARIANT_ARDUINO_DUE_X_
@@ -62,7 +63,7 @@ void loop(void)
 	char incoming_byte = SERIAL_OBJ.read();
 
 	// transform incoming byte
-	incoming_byte = rotate_letter(incoming_byte);
+	char outgoing_byte = rotate_letter(incoming_byte);
 
-	SERIAL_OBJ.print(incoming_byte);
+	SERIAL_OBJ.print(outgoing_byte);
 }
