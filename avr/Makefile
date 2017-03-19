@@ -13,9 +13,20 @@ APPNAME=example_firmware
 SRC_DIR=../$(APPNAME)
 SOURCES=$(APPNAME).o rot13.o
 
-ARDUINO_ROOT=/usr/share/arduino
-ARDUINO_SOURCES_DIR=${ARDUINO_ROOT}/hardware/arduino/cores/arduino
-ARDUINO_VARIANT_DIR=${ARDUINO_ROOT}/hardware/arduino/variants/mega
+#ARDUINO_ROOT=/usr/share/arduino
+ARDUINO_ROOT=/home/eric/arduino-1.6.12
+ARDUINO_ARCH_ROOT=$(ARDUINO_ROOT)/hardware/arduino/avr
+ARDUINO_SOURCES_DIR=$(ARDUINO_ARCH_ROOT)/cores/arduino
+ARDUINO_VARIANT_DIR=$(ARDUINO_ARCH_ROOT)/variants/mega
+
+ARDUINO_LIBRARY_ROOT=$(ARDUINO_ARCH_ROOT)/libraries
+
+ARDUINO_SPI_SRC_DIR=$(ARDUINO_LIBRARY_ROOT)/SPI/src
+ARDUINO_HID_SRC_DIR=$(ARDUINO_LIBRARY_ROOT)/HID/src
+ARDUINO_EEPROM_SRC_DIR=$(ARDUINO_LIBRARY_ROOT)/EEPROM/src
+#ARDUINO_SOFTWARESERIAL_SRC_DIR=$(ARDUINO_LIBRARY_ROOT)/SoftwareSerial/src
+ARDUINO_WIRE_SRC_DIR=$(ARDUINO_LIBRARY_ROOT)/Wire/src
+ARDUINO_WIRE_UTIL_SRC_DIR=$(ARDUINO_LIBRARY_ROOT)/Wire/src/utility
 
 # port the arduino is connected to
 # and CPU type as defined by gcc and AVR-DUDE
@@ -62,25 +73,7 @@ NOISYFLAGS=-Wall -Wextra -pedantic -Werror
 #NOISYFLAGS=
 CXX_WORKAROUND_FLAGS=-Wno-variadic-macros -Wno-ignored-qualifiers
 
-ARDUINO_SOURCES=main.o \
-			CDC.o \
-			HardwareSerial.o \
-			HID.o \
-			IPAddress.o \
-			new.o \
-			Print.o \
-			Stream.o \
-			Tone.o \
-			USBCore.o \
-			WInterrupts.o \
-			wiring_analog.o \
-			wiring.o \
-			wiring_digital.o \
-			wiring_pulse.o \
-			wiring_shift.o \
-			WMath.o \
-			WString.o
-
+ARDUINO_SOURCES := $(shell find $(ARDUINO_ARCH_ROOT) -name "*.c" -o -name "*.cpp" | grep -v bootloaders | grep -v firmwares | grep -v SoftwareSerial | sed -e's@.*/@@' -e's@\.c.*@.o@')
 
 %.o : $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) $(NOISYFLAGS) -c $< -o $@
@@ -93,6 +86,51 @@ ARDUINO_SOURCES=main.o \
 
 %.o : $(ARDUINO_SOURCES_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+
+%.o : $(ARDUINO_SPI_SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o : $(ARDUINO_SPI_SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+
+%.o : $(ARDUINO_HID_SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o : $(ARDUINO_HID_SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+
+%.o : $(ARDUINO_EEPROM_SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o : $(ARDUINO_EEPROM_SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+
+%.o : $(ARDUINO_SOFTWARESERIAL_SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o : $(ARDUINO_SOFTWARESERIAL_SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+
+%.o : $(ARDUINO_WIRE_SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o : $(ARDUINO_WIRE_SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+
+%.o : $(ARDUINO_WIRE_UTIL_SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o : $(ARDUINO_WIRE_UTIL_SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+
+
 
 all: $(APPNAME).hex
 	echo YAY
@@ -110,6 +148,19 @@ upload: $(APPNAME).hex
 
 libarduinocore.a: $(ARDUINO_SOURCES)
 	ar rc $@ $^
+
+echo_vars:
+	echo "ARDUINO_ROOT=$(ARDUINO_ROOT)"
+	echo "ARDUINO_ARCH_ROOT=$(ARDUINO_ARCH_ROOT)"
+	echo "ARDUINO_SOURCES_DIR=$(ARDUINO_SOURCES_DIR)"
+	echo "ARDUINO_VARIANT_DIR=$(ARDUINO_VARIANT_DIR)"
+	echo "ARDUINO_LIBRARY_ROOT=$(ARDUINO_LIBRARY_ROOT)"
+	echo "ARDUINO_SPI_SRC_DIR=$(ARDUINO_SPI_SRC_DIR)"
+	echo "ARDUINO_HID_SRC_DIR=$(ARDUINO_HID_SRC_DIR)"
+	echo "ARDUINO_EEPROM_SRC_DIR=$(ARDUINO_EEPROM_SRC_DIR)"
+	echo "ARDUINO_SOFTWARESERIAL_SRC_DIR=$(ARDUINO_SOFTWARESERIAL_SRC_DIR)"
+	echo "ARDUINO_WIRE_SRC_DIR=$(ARDUINO_WIRE_SRC_DIR)"
+	echo "ARDUINO_SOURCES=$(ARDUINO_SOURCES)"
 
 $(APPNAME).bin : $(SOURCES) libarduinocore.a
 	$(CXX) $(CXXFLAGS) $(NOISYFLAGS) $^ -o $@ -L. -larduinocore
