@@ -11,7 +11,11 @@
 # the name of the main file and sources to be used
 APPNAME=example_firmware
 SRC_DIR=../$(APPNAME)
-SOURCES=$(APPNAME).o rot13.o
+SOURCES=$(APPNAME).o \
+ rot13.o \
+ print-data-type-sizes.o \
+ eh-printf.o \
+ eh-sys-context-arduino.o
 
 #ARDUINO_ROOT=/usr/share/arduino
 ARDUINO_ROOT=/home/eric/arduino-1.6.12
@@ -67,7 +71,7 @@ SHAREDFLAGS= -gstabs -Os \
 		-I$(ARDUINO_VARIANT_DIR) \
 		-mmcu=$(GCC_MMCU) -DF_CPU=$(CLOCKSPEED)
 
-CFLAGS=-std=gnu99 -Wstrict-prototypes $(SHAREDFLAGS)
+CFLAGS=-std=gnu11 -Wstrict-prototypes $(SHAREDFLAGS)
 CXXFLAGS=$(SHAREDFLAGS)
 NOISYFLAGS=-Wall -Wextra -pedantic -Werror
 #NOISYFLAGS=
@@ -75,11 +79,16 @@ CXX_WORKAROUND_FLAGS=-Wno-variadic-macros -Wno-ignored-qualifiers
 
 ARDUINO_SOURCES := $(shell find $(ARDUINO_ARCH_ROOT) -name "*.c" -o -name "*.cpp" | grep -v bootloaders | grep -v firmwares | grep -v SoftwareSerial | sed -e's@.*/@@' -e's@\.c.*@.o@')
 
+%.o : $(SRC_DIR)/%.ino
+	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(CXX_WORKAROUND_FLAGS) \
+		-c -x c++ $< -o $@
+
 %.o : $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) $(NOISYFLAGS) -c $< -o $@
 
 %.o : $(SRC_DIR)/%.cpp
 	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(CXX_WORKAROUND_FLAGS) -c $< -o $@
+
 
 %.o : $(ARDUINO_SOURCES_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@

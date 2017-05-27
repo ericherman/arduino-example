@@ -14,7 +14,11 @@ APPNAME=example_firmware
 SRC_DIR=../$(APPNAME)
 
 # manual dependencies
-APP_OBJS=$(APPNAME).o rot13.o
+APP_OBJS=$(APPNAME).o \
+ rot13.o \
+ print-data-type-sizes.o \
+ eh-printf.o \
+ eh-sys-context-arduino.o
 
 # set this flag if you plan to communicate to the firmware running on
 # the ardiuno DUE using the "programming" (not the "native") port
@@ -28,10 +32,11 @@ RESET_PORT=stty -F /dev/$(PORT) 1200; sleep 1
 
 # set the "BOSSAC_USB_NATIVE" to "false" if you plan to flash the firmware
 # using the "programming" (not the "native") port
-BOSSAC_USB_NATIVE=false
-#BOSSAC_USB_NATIVE=true
+#BOSSAC_USB_NATIVE=false
+BOSSAC_USB_NATIVE=true
 
 ARDUINO_ROOT=$(HOME)/arduino-1.5.5
+#ARDUINO_ROOT=$(HOME)/arduino-1.6.12
 ARDUINO_SAM_DIR=$(ARDUINO_ROOT)/hardware/arduino/sam
 ARDUINO_SPI_DIR=$(ARDUINO_SAM_DIR)/libraries/SPI
 ARDUINO_SOURCES_DIR=$(ARDUINO_SAM_DIR)/cores/arduino
@@ -116,10 +121,8 @@ ARDUINO_CORE_OBJS=itoa.o \
 		variant.o
 
 %.o : $(SRC_DIR)/%.ino
-	ln -sv $^ $(basename $(notdir $^)).cpp
 	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(APP_FLAGS) \
-		-c $(basename $(notdir $^)).cpp -o $@
-	rm -v $(basename $(notdir $^)).cpp
+		-c -x c++ $< -o $@
 
 %.o : $(SRC_DIR)/%.c
 	$(CC) $(NOISYFLAGS) $(CFLAGS) $(APP_FLAGS) -c $< -o $@

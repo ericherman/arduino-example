@@ -13,20 +13,10 @@
 */
 
 #include <Arduino.h>
-#include <HardwareSerial.h>
+#include "serialobj.h"
 #include "rot13.h"
-
-#ifdef _VARIANT_ARDUINO_DUE_X_
-#if ARDUINO_DUE_USB_PROGRAMMING == 1
-#define SERIAL_OBJ Serial
-#else // default to the NATIVE port
-#define SERIAL_OBJ SerialUSB
-#endif
-#endif
-
-#ifndef SERIAL_OBJ
-#define SERIAL_OBJ Serial
-#endif
+#include "eh-printf.h"
+#include "print-data-type-sizes.h"
 
 unsigned long loop_counter;
 unsigned long blink_state;
@@ -66,4 +56,8 @@ void loop(void)
 	char outgoing_byte = rotate_letter(incoming_byte);
 
 	SERIAL_OBJ.print(outgoing_byte);
+
+	if (incoming_byte == '^' || incoming_byte == '~') {
+		print_data_type_sizes();
+	}
 }
