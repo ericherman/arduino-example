@@ -40,4 +40,4 @@ size_t eh_sys_output_str(void *ctx, const char *str, size_t len);
 }
 #endif
 
-#endif	/* EH_SYS_CONTEXT */
+#endif /* EH_SYS_CONTEXT */

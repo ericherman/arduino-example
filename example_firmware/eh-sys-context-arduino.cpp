@@ -1,5 +1,5 @@
 /*
-eh-printf-linux.c - linux specific system calls
+eh-sys-context-arduino.cpp: Arduino specific system calls
 Copyright (C) 2016 Eric Herman
 
 This work is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@ License (COPYING) along with this library; if not, see:
 */
 
 #include "eh-sys-context.h"
-#include "serialobj.h"
+#include "eh-arduino-serialobj.h"
 
 extern "C" {
 
@@ -45,8 +45,8 @@ size_t eh_sys_output_str(void *ctx, const char *buf, size_t len)
 	if (ctx == NULL) {
 		return (size_t)(-1L);
 	}
-	const uint8_t* bytes = (const uint8_t*)buf;
+	const uint8_t *bytes = (const uint8_t *)buf;
 	return (size_t)SERIAL_OBJ.write(bytes, len);
 }
 
-} /* extern C */
+} /* extern "C" */

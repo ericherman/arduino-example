@@ -13,7 +13,7 @@
 */
 
 #include <Arduino.h>
-#include "serialobj.h"
+#include "eh-arduino-serialobj.h"
 #include "rot13.h"
 #include "eh-printf.h"
 #include "print-data-type-sizes.h"
