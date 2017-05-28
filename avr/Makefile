@@ -11,14 +11,35 @@
 # the name of the main file and sources to be used
 APPNAME=example_firmware
 SRC_DIR=../$(APPNAME)
-SOURCES=$(APPNAME).o \
+
+C_PLATFORM_HEADERS=\
+ -include $(SRC_DIR)/ehbigint-arduino.h
+
+CPP_PLATFORM_HEADERS=\
+ -include $(SRC_DIR)/eh-arduino-serialobj.h \
+ $(C_PLATFORM_HEADERS)
+
+SOURCES_POOR=$(APPNAME).o \
  rot13.o \
  print-data-type-sizes.o \
  eh-printf.o \
  eh-sys-context-arduino.o
 
+SOURCES_RICH=$(SOURCES_POOR) \
+ bi-calc.o \
+ eba.o \
+ ehstr.o \
+ ehbigint-eba.o \
+ ehbigint-priv.o \
+ ehbigint-str.o \
+ ehbigint-util.o \
+ ehbigint.o \
+ ehbigint-util-arduino.o \
+
+SOURCES=$(SOURCES_RICH)
+
 #ARDUINO_ROOT=/usr/share/arduino
-ARDUINO_ROOT=/home/eric/arduino-1.6.12
+ARDUINO_ROOT=$(HOME)/arduino-1.6.12
 ARDUINO_ARCH_ROOT=$(ARDUINO_ROOT)/hardware/arduino/avr
 ARDUINO_SOURCES_DIR=$(ARDUINO_ARCH_ROOT)/cores/arduino
 ARDUINO_VARIANT_DIR=$(ARDUINO_ARCH_ROOT)/variants/mega
@@ -58,6 +79,8 @@ endif
 #AVRDUDE_STK=arduino
 #AVRDUDE_BAUD=115200
 #ARDUINO_VARIANT_DIR=$(ARDUINO_ARCH_ROOT)/variants/standard
+#SOURCES=$(SOURCES_POOR)
+#SKETCH_PLATFORM_DEFINES=-DSKETCH_SKIP_EHBI
 
 
 # CPU Clock speed (cycles per second)
@@ -72,7 +95,8 @@ SHAREDFLAGS= -gstabs -Os \
 		-fshort-enums \
 		-I$(ARDUINO_SOURCES_DIR) \
 		-I$(ARDUINO_VARIANT_DIR) \
-		-mmcu=$(GCC_MMCU) -DF_CPU=$(CLOCKSPEED)
+		-mmcu=$(GCC_MMCU) -DF_CPU=$(CLOCKSPEED) \
+		$(SKETCH_PLATFORM_DEFINES)
 
 CFLAGS=-std=gnu11 -Wstrict-prototypes $(SHAREDFLAGS)
 CXXFLAGS=$(SHAREDFLAGS)
@@ -84,13 +108,15 @@ ARDUINO_SOURCES := $(shell find $(ARDUINO_ARCH_ROOT) -name "*.c" -o -name "*.cpp
 
 %.o : $(SRC_DIR)/%.ino
 	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(CXX_WORKAROUND_FLAGS) \
-		-c -x c++ $< -o $@
+		$(CPP_PLATFORM_HEADERS) -c -x c++ $< -o $@
 
 %.o : $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) $(NOISYFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(NOISYFLAGS) \
+		$(C_PLATFORM_HEADERS) -c $< -o $@
 
 %.o : $(SRC_DIR)/%.cpp
-	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(CXX_WORKAROUND_FLAGS) -c $< -o $@
+	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(CXX_WORKAROUND_FLAGS) \
+		$(CPP_PLATFORM_HEADERS) -c $< -o $@
 
 
 %.o : $(ARDUINO_SOURCES_DIR)/%.c

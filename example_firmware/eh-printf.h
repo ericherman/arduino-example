@@ -37,6 +37,10 @@ int eh_vprintf(const char *format, va_list ap);
 
 int eh_vsnprintf(char *str, size_t size, const char *format, va_list ap);
 
+#ifdef NEED_EH_STRLEN
+size_t eh_strlen(const char *str);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

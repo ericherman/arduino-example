@@ -294,7 +294,11 @@ static size_t eh_append(eh_output_char_func output_char,
 Returns the number of bytes in the string, excluding the terminating
 null byte ('\0').
 */
+#ifdef NEED_EH_STRLEN
+size_t eh_strlen(const char *str)
+#else
 static size_t eh_strlen(const char *str)
+#endif
 {
 	size_t i;
 

@@ -14,8 +14,12 @@
 
 #include <Arduino.h>
 #include "eh-arduino-serialobj.h"
-#include "rot13.h"
+#ifndef SKETCH_SKIP_EHBI
+#include "ehbigint-arduino.h"
+#include "bi-calc.h"
+#endif
 #include "eh-printf.h"
+#include "rot13.h"
 #include "print-data-type-sizes.h"
 
 unsigned long loop_counter;
@@ -60,4 +64,14 @@ void loop(void)
 	if (incoming_byte == '^' || incoming_byte == '~') {
 		print_data_type_sizes();
 	}
+#ifndef SKETCH_SKIP_EHBI
+	if (incoming_byte == '*') {
+		size_t len = 80;
+		char buf[80];
+		int verbose = 1;
+		buf[0] = '\0';
+		bi_calc("987654321", '*', "1000000000000", buf, len, verbose);
+		SERIAL_OBJ.println(buf);
+	}
+#endif /* SKETCH_SKIP_EHBI */
 }

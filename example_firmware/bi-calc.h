@@ -1,6 +1,5 @@
-
 /*
- * Copyright (C) 2012,2017 Eric Herman <eric@freesa.org>
+ * Copyright (C) 2012 Eric Herman <eric@freesa.org>
  *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,22 +15,22 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SERIALOBJ_H
-#define SERIALOBJ_H
+#ifndef BI_CALC_H
+#define BI_CALC_H
 
-#include <Arduino.h>
-#include <HardwareSerial.h>
+#ifndef SKETCH_SKIP_EHBI
 
-#if defined( _VARIANT_ARDUINO_DUE_X_ ) || defined( ARDUINO_SAM_DUE )
-#if ARDUINO_DUE_USB_PROGRAMMING == 1
-#define SERIAL_OBJ SerialUSB
-#else // default to the NATIVE port
-#define SERIAL_OBJ Serial
-#endif
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#ifndef SERIAL_OBJ
-#define SERIAL_OBJ Serial
+int bi_calc(const char *a, char op, const char *b, char *result, size_t len,
+	    int verbose);
+
+#ifdef __cplusplus
+} /* extern "C" */
 #endif
 
-#endif /* SERIALOBJ_H */
+#endif /* SKETCH_SKIP_EHBI */
+
+#endif /* BI_CALC_H */

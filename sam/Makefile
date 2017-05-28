@@ -13,12 +13,29 @@ APPNAME=example_firmware
 
 SRC_DIR=../$(APPNAME)
 
+C_PLATFORM_HEADERS=\
+ -include $(SRC_DIR)/ehbigint-arduino.h
+
+CPP_PLATFORM_HEADERS=\
+ -include $(SRC_DIR)/eh-arduino-serialobj.h \
+ $(C_PLATFORM_HEADERS)
+
 # manual dependencies
 APP_OBJS=$(APPNAME).o \
  rot13.o \
  print-data-type-sizes.o \
+ bi-calc.o \
+ eba.o \
+ ehstr.o \
+ ehbigint-eba.o \
+ ehbigint-priv.o \
+ ehbigint-str.o \
+ ehbigint-util.o \
+ ehbigint.o \
+ ehbigint-util-arduino.o \
  eh-printf.o \
  eh-sys-context-arduino.o
+
 
 # set this flag if you plan to communicate to the firmware running on
 # the ardiuno DUE using the "programming" (not the "native") port
@@ -122,13 +139,15 @@ ARDUINO_CORE_OBJS=itoa.o \
 
 %.o : $(SRC_DIR)/%.ino
 	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(APP_FLAGS) \
-		-c -x c++ $< -o $@
+		 $(CPP_PLATFORM_HEADERS) -c -x c++ $< -o $@
 
 %.o : $(SRC_DIR)/%.c
-	$(CC) $(NOISYFLAGS) $(CFLAGS) $(APP_FLAGS) -c $< -o $@
+	$(CC) $(NOISYFLAGS) $(CFLAGS) $(APP_FLAGS) \
+		 $(C_PLATFORM_HEADERS) -c $< -o $@
 
 %.o : $(SRC_DIR)/%.cpp
-	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(APP_FLAGS) -c $< -o $@
+	$(CXX) $(NOISYFLAGS) $(CXXFLAGS) $(APP_FLAGS) \
+		 $(CPP_PLATFORM_HEADERS) -c $< -o $@
 
 %.o : $(ARDUINO_SOURCES_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@

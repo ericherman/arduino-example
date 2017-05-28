@@ -61,7 +61,9 @@ static size_t eh_append(eh_output_char_func output_char,
 			eh_output_str_func output_str, void *ctx,
 			size_t field_size, const char *str);
 
+#ifndef NEED_EH_STRLEN
 static size_t eh_strlen(const char *str);
+#endif
 
 static size_t eh_long_to_ascii(char *dest, size_t dest_size, enum eh_base base,
 			       unsigned char zero_padded, size_t field_size,
