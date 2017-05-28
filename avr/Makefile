@@ -32,6 +32,9 @@ ARDUINO_EEPROM_SRC_DIR=$(ARDUINO_LIBRARY_ROOT)/EEPROM/src
 ARDUINO_WIRE_SRC_DIR=$(ARDUINO_LIBRARY_ROOT)/Wire/src
 ARDUINO_WIRE_UTIL_SRC_DIR=$(ARDUINO_LIBRARY_ROOT)/Wire/src/utility
 
+# if you have used the arduino IDE you can use this:
+#AVRDUDE_CONF=-C$(ARDUINO_ROOT)/hardware/tools/avr/etc/avrdude.conf
+
 # port the arduino is connected to
 # and CPU type as defined by gcc and AVR-DUDE
 ifeq ($(wildcard /dev/ttyACM0),)
@@ -43,19 +46,19 @@ AVRDUDE_BAUD=57600
 else
 PORT=/dev/ttyACM0
 GCC_MMCU=atmega2560
-AVRDUDE_STK=stk500v2
 AVRDUDE_MCU=atmega2560
+AVRDUDE_STK=stk500v2
 AVRDUDE_BAUD=115200
 endif
 
 # for "Uno" use:
-#AVRDUDE_STK=arduino
-#AVRDUDE_MCU=atmega328p
-
+#PORT=/dev/ttyACM0
 #GCC_MMCU=atmega328p
 #AVRDUDE_MCU=atmega328p
-#AVRDUDE_STK=stk500v1
-#AVRDUDE_BAUD=57600
+#AVRDUDE_STK=arduino
+#AVRDUDE_BAUD=115200
+#ARDUINO_VARIANT_DIR=$(ARDUINO_ARCH_ROOT)/variants/standard
+
 
 # CPU Clock speed (cycles per second)
 CLOCKSPEED=16000000
@@ -149,8 +152,8 @@ clean:
 
 upload: $(APPNAME).hex
 	stty -F $(PORT) hupcl # e.g. reset the arduino
-	avrdude -v -c $(AVRDUDE_STK) -p $(AVRDUDE_MCU) \
-		-b $(AVRDUDE_BAUD) -P $(PORT) -U flash:w:$(APPNAME).hex
+	avrdude $(AVRDUDE_CONF) -v -c $(AVRDUDE_STK) -p $(AVRDUDE_MCU) \
+		-b $(AVRDUDE_BAUD) -P $(PORT) -U flash:w:$(APPNAME).hex:i
 
 %.hex : %.bin
 	avr-objcopy -O ihex -R .eeprom $< $@
