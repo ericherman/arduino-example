@@ -20,6 +20,21 @@ License (COPYING) along with this library; if not, see:
 
 */
 
+/*
+
+By using eh-printf instead of spirntf, I see this change in the
+firmware size:
+
+-rw-rw-r-- 1 eric eric  29353 May 28 06:56 example_sprintf.hex
+-rw-rw-r-- 1 eric eric  24538 May 28 06:57 example_ehprintf.hex
+
+And, I notice this difference:
+
+Sketch uses 4,566 bytes (14%) of program storage space. Maximum is 32,256 bytes.
+Sketch uses 4,182 bytes (12%) of program storage space. Maximum is 32,256 bytes.
+
+*/
+
 #include "eh-sys-context.h"
 #include "eh-arduino-serialobj.h"
 
