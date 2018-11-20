@@ -22,20 +22,6 @@ extern "C" {
 #include "ehbigint-log.h"
 #include "ehbigint-util.h"
 
-#define EBA_SKIP_EBA_NEW
-#define EBA_SKIP_STRUCT_NULL_CHECK
-/*
-#define EBA_SKIP_ARRAY_INDEX_OVERRUN_SAFETY
-#define EBA_SKIP_ENDIAN
-#define EBA_SKIP_SHIFTS
-#define EBA_SKIP_STRUCT_BITS_NULL_CHECK
-#define EBA_DIY_MEMCPY
-#define Eba_memcpy
-#define Eba_alloc
-#define Eba_alloc_str
-#define Eba_free
-*/
-
 extern int ehbi_eba_err;
 #define Eba_crash() do { \
 	Ehbi_log_error0("EBA CRASH!\n"); \
@@ -55,9 +41,11 @@ extern int ehbi_eba_err;
 #define Eba_log_error3 Ehbi_log_error3
 
 #define Eba_stack_alloc ehbi_stack_alloc
+#define Eba_stack_alloc_str "ehbi_stack_alloc"
 #define Eba_stack_free ehbi_stack_free
 
 #include "eba.h"
+#define Ehstr_memset Eba_memset
 
 #ifdef __cplusplus
 }

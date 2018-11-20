@@ -1,6 +1,6 @@
 /*
 ehbigint.h: slow Big Int library hopefully somewhat suitable for 8bit CPUs
-Copyright (C) 2016 Eric Herman <eric@freesa.org>
+Copyright (C) 2016, 2018 Eric Herman <eric@freesa.org>
 
 This work is free software: you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
@@ -33,6 +33,13 @@ struct ehbigint {
    returns 0 on success or error_code on error
 */
 int ehbi_init(struct ehbigint *bi, unsigned char *bytes, size_t len);
+
+/*
+   assignes the byte[] to the struct, sets to val
+   returns 0 on success or error_code on error
+*/
+int ehbi_init_l(struct ehbigint *bi, unsigned char *bytes, size_t len,
+		long val);
 
 /*
    populates an ehbigint with a value of zero
@@ -79,6 +86,12 @@ int ehbi_add(struct ehbigint *res, const struct ehbigint *bi1,
 	     const struct ehbigint *bi2);
 
 /*
+   populates the first ehbigint with the sum of the second and third
+   returns 0 on success or error_code on error
+*/
+int ehbi_add_l(struct ehbigint *res, const struct ehbigint *bi1, long v2);
+
+/*
    increments the first ehbigint by the value in the second parameter
    returns 0 on success or error_code on error
 */
@@ -97,6 +110,12 @@ int ehbi_inc_l(struct ehbigint *bi, long val);
 int ehbi_dec(struct ehbigint *bi, const struct ehbigint *val);
 
 /*
+   decrements the first ehbigint by the value in the second parameter
+   returns 0 on success or error_code on error
+*/
+int ehbi_dec_l(struct ehbigint *bi, long val);
+
+/*
    populates the first ehbigint with the value of the second perameter minus
    the third
    returns 0 on success or error_code on error
@@ -105,11 +124,24 @@ int ehbi_subtract(struct ehbigint *res, const struct ehbigint *bi1,
 		  const struct ehbigint *bi2);
 
 /*
+   populates the first ehbigint with the value of the second perameter minus
+   the third
+   returns 0 on success or error_code on error
+*/
+int ehbi_subtract_l(struct ehbigint *res, const struct ehbigint *bi1, long v2);
+
+/*
    populates the first ehbigint with the sum of the second and third
    returns 0 on success or error_code on error
 */
 int ehbi_mul(struct ehbigint *res, const struct ehbigint *bi1,
 	     const struct ehbigint *bi2);
+
+/*
+   populates the first ehbigint with the sum of the second and third
+   returns 0 on success or error_code on error
+*/
+int ehbi_mul_l(struct ehbigint *res, const struct ehbigint *bi1, long v2);
 
 /*
    shifts the value of the ehbigint up by num_bits number of bits
@@ -133,12 +165,37 @@ int ehbi_div(struct ehbigint *quotient, struct ehbigint *remainder,
 	     const struct ehbigint *denominator);
 
 /*
+   populates the first ehbigint quotient and remainder with the results
+   of the numerator divided by the denominator
+   returns 0 on success or error_code on error
+*/
+int ehbi_div_l(struct ehbigint *quotient, struct ehbigint *remainder,
+	       const struct ehbigint *numerator, long denominator);
+
+/*
+   populates the first ehbigint with the largest integer not greater
+   than the square root of the thrid ehbigint; the second ehbigint
+   is populated with the remainder
+   returns 0 on success or error_code on error
+*/
+int ehbi_sqrt(struct ehbigint *intsqrt, struct ehbigint *remainder,
+	      const struct ehbigint *val);
+
+/*
    populates the first ehbigint result with the value of the base
    raised to the power of the exponent
    returns 0 on success or error_code on error
 */
 int ehbi_exp(struct ehbigint *result, const struct ehbigint *base,
 	     const struct ehbigint *exponent);
+
+/*
+   populates the first ehbigint result with the value of the base
+   raised to the power of the exponent
+   returns 0 on success or error_code on error
+*/
+int ehbi_exp_l(struct ehbigint *result, const struct ehbigint *base,
+	       long exponent);
 
 /*
    populates the first ehbigint result with the value of the base
@@ -149,6 +206,63 @@ int ehbi_exp_mod(struct ehbigint *result, const struct ehbigint *base,
 		 const struct ehbigint *exponent,
 		 const struct ehbigint *modulus);
 
+/*
+   populates the first ehbigint result with the value of the base
+   raised to the power of the exponent mod the modulus
+   returns 0 on success or error_code on error
+*/
+int ehbi_exp_mod_l(struct ehbigint *result, const struct ehbigint *base,
+		   const struct ehbigint *exponent, long modulus);
+
+/*
+   populates the first ehbigint result with the value of the base
+   raised to the power of the exponent mod the modulus
+   returns 0 on success or error_code on error
+*/
+int ehbi_exp_mod_ll(struct ehbigint *result, const struct ehbigint *base,
+		    long exponent, long modulus);
+
+/*
+   populates the first ehbigint result with the number of combinations
+   of n objects taken k at a time, disregarding order.
+   returns 0 on success or error_code on error
+
+   Knuth TAoCP vol 1
+   1.2.6 Binomial Coefficients
+     / n \    n(n-1)...(n-k+1)
+    (     ) = ----------------
+     \ k /       k(k-1)...1
+*/
+int ehbi_n_choose_k(struct ehbigint *result, const struct ehbigint *n,
+		    const struct ehbigint *k);
+
+/*
+   populates the first ehbigint result with the number of combinations
+   of n objects taken k at a time, disregarding order.
+   returns 0 on success or error_code on error
+
+   Knuth TAoCP vol 1
+   1.2.6 Binomial Coefficients
+     / n \    n(n-1)...(n-k+1)
+    (     ) = ----------------
+     \ k /       k(k-1)...1
+*/
+int ehbi_n_choose_k_l(struct ehbigint *result, const struct ehbigint *n,
+		      long k);
+
+/*
+   populates the first ehbigint result with the number of combinations
+   of n objects taken k at a time, disregarding order.
+   returns 0 on success or error_code on error
+
+   Knuth TAoCP vol 1
+   1.2.6 Binomial Coefficients
+     / n \    n(n-1)...(n-k+1)
+    (     ) = ----------------
+     \ k /       k(k-1)...1
+*/
+int ehbi_n_choose_k_ll(struct ehbigint *result, long n, long k);
+
 #ifndef EHBI_SKIP_IS_PROBABLY_PRIME
 
 /* chance of incorrectly naming a non-prime as prime is 4^(-accuracy) */
@@ -158,17 +272,17 @@ int ehbi_exp_mod(struct ehbigint *result, const struct ehbigint *base,
 #endif
 
 #ifndef EHBI_MIN_TRIALS_FOR_IS_PROBABLY_PRIME
-/* 4^(-25) == 9.53674316e-7 */
+/* 4^(-10) == 9.53674316e-7 */
 #define EHBI_MIN_TRIALS_FOR_IS_PROBABLY_PRIME 10U
 #endif
 
-#ifndef EHBI_NUM_SMALL_PRIMES_TO_TRIAL_DIVIDE
-#define EHBI_NUM_SMALL_PRIMES_TO_TRIAL_DIVIDE 20U
+#ifndef EHBI_NUM_SMALL_PRIME_WITNESSES
+#define EHBI_NUM_SMALL_PRIME_WITNESSES 13U
 #endif
 
 /* used in ehbi_is_probably_prime */
 #ifndef EHBI_MAX_TRIES_TO_GRAB_RANDOM_BYTES
-#define EHBI_MAX_TRIES_TO_GRAB_RANDOM_BYTES 10U
+#define EHBI_MAX_TRIES_TO_GRAB_RANDOM_BYTES 30U
 #endif
 
 /*
@@ -196,12 +310,26 @@ int ehbi_equals(const struct ehbigint *bi1, const struct ehbigint *bi2,
 		int *err);
 
 /*
+   returns 1 if the values represented by the first two arguments are equal
+   returns 0 otherwise
+   populates the contents of err with 0 on success or error_code on error
+*/
+int ehbi_equals_l(const struct ehbigint *bi1, long i2, int *err);
+
+/*
    returns 1 if the first parameter is less than the second
    returns 0 otherwise
    populates the contents of err with 0 on success or error_code on error
 */
 int ehbi_less_than(const struct ehbigint *bi1, const struct ehbigint *bi2,
 		   int *err);
+
+/*
+   returns 1 if the first parameter is less than the second
+   returns 0 otherwise
+   populates the contents of err with 0 on success or error_code on error
+*/
+int ehbi_less_than_l(const struct ehbigint *bi1, long i2, int *err);
 
 /*
    returns 1 if the first parameter is greater than the second
@@ -212,6 +340,13 @@ int ehbi_greater_than(const struct ehbigint *bi1, const struct ehbigint *bi2,
 		      int *err);
 
 /*
+   returns 1 if the first parameter is greater than the second
+   returns 0 otherwise
+   populates the contents of err with 0 on success or error_code on error
+*/
+int ehbi_greater_than_l(const struct ehbigint *bi1, long i2, int *err);
+
+/*
    returns 0 if the values represented by the ehbigint arguments are equal
    returns <0 if the first ehbigint is less than the second
    returns >0 if the first ehbigint is greater than the second
@@ -219,6 +354,15 @@ int ehbi_greater_than(const struct ehbigint *bi1, const struct ehbigint *bi2,
 */
 int ehbi_compare(const struct ehbigint *bi1, const struct ehbigint *bi2,
 		 int *err);
+
+/*
+   returns 0 if the values represented by the arguments are equal
+   returns <0 if the first ehbigint is less than the second
+   returns >0 if the first ehbigint is greater than the second
+   populates the contents of err with 0 on success or error_code on error
+*/
+
+int ehbi_compare_l(const struct ehbigint *bi1, long i2, int *err);
 
 /*
    returns 1 if negative
@@ -287,6 +431,7 @@ enum {
 	EHBI_DIVIDE_BY_ZERO,
 	EHBI_EBA_CRASH,
 	EHBI_FILE_ERROR,
+	EHBI_SQRT_NEGATIVE,
 	EHBI_LAST
 };
 

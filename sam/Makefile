@@ -101,7 +101,7 @@ SHAREDFLAGS= -gstabs -Os \
 		-I$(ARDUINO_SAM_DIR)/system/CMSIS/Device/ATMEL \
 		-I$(ARDUINO_SOURCES_DIR)/avr
 
-CFLAGS=-std=gnu99 -Wstrict-prototypes $(SHAREDFLAGS)
+CFLAGS=-std=gnu99 -Wstrict-prototypes $(SHAREDFLAGS) -Wno-unused-parameter
 CXXFLAGS=$(SHAREDFLAGS) -fno-rtti -fno-exceptions
 
 #NOISYFLAGS=-Wall -Wextra -pedantic -Werror

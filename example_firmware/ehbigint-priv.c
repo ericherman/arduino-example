@@ -49,13 +49,9 @@ void ehbi_unsafe_reset_bytes_used(struct ehbigint *bi)
 
 void ehbi_unsafe_zero(struct ehbigint *bi)
 {
-	size_t i;
-
 	Trace_bi(10, bi);
 
-	for (i = 0; i < bi->bytes_len; ++i) {
-		bi->bytes[i] = 0x00;
-	}
+	Eba_memset(bi->bytes, 0x00, bi->bytes_len);
 	bi->bytes_used = 1;
 	bi->sign = 0;
 

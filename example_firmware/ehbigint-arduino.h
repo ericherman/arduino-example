@@ -20,10 +20,12 @@
 
 #define CHAR_BIT 8
 #define EBA_CHAR_BIT CHAR_BIT
-#define EBA_DIY_MEMCPY
-#define EBA_SKIP_EBA_NEW
-#define EBA_SKIP_STRUCT_NULL_CHECK
-#define EBA_SKIP_STRUCT_BITS_NULL_CHECK
+#define EBA_SKIP_LIBC 1
+#define EBA_DIY_MEMCPY 1
+#define EBA_DIY_MEMSET 1
+#define EBA_SKIP_NEW 1
+#define EBA_SKIP_STRUCT_NULL_CHECK 1
+#define EBA_SKIP_STRUCT_BITS_NULL_CHECK 1
 
 #define strnlen ehstrnlen
 #define NEED_EH_STRLEN

@@ -98,7 +98,7 @@ SHAREDFLAGS= -gstabs -Os \
 		-mmcu=$(GCC_MMCU) -DF_CPU=$(CLOCKSPEED) \
 		$(SKETCH_PLATFORM_DEFINES)
 
-CFLAGS=-std=gnu11 -Wstrict-prototypes $(SHAREDFLAGS)
+CFLAGS=-std=gnu11 -Wstrict-prototypes $(SHAREDFLAGS) -Wno-unused-parameter
 CXXFLAGS=$(SHAREDFLAGS)
 NOISYFLAGS=-Wall -Wextra -pedantic -Werror
 #NOISYFLAGS=

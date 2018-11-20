@@ -21,6 +21,10 @@ extern "C" {
 
 #include "ehbigint.h"		/* struct ehbigint */
 
+#ifndef Ehbi_noop
+#define Ehbi_noop ((void)(0))
+#endif
+
 #ifndef SKIP_STDIO_H
 #include <stdio.h>		/* FILE */
 /* Get the FILE pointer to where fprintf messages currently target.
@@ -93,7 +97,7 @@ extern char EHBI_DBUG_Buf1[80];
 		fprintf(stderr, "}"); \
 	} } while(0)
 
-#define Ehbi_trace_fprintf_s(level, name, val) \
+#define Ehbi_trace_fprintf_s(level, val, name) \
 	do { if (level < EHBI_DEBUG) { \
 		for (EHBI_DBUG_i= 0; \
 		     EHBI_DBUG_i < EHBI_DBUG_depth; \
@@ -102,6 +106,18 @@ extern char EHBI_DBUG_Buf1[80];
 		} \
 		EHBI_DBUG_Buf1[EHBI_DBUG_i] = '\0'; \
 		fprintf(stderr, "\n%s\t\t%s: \"%s\"", \
+			EHBI_DBUG_Buf1, name, val); \
+	} } while(0)
+
+#define Ehbi_trace_fprintf_l(level, val, name) \
+	do { if (level < EHBI_DEBUG) { \
+		for (EHBI_DBUG_i= 0; \
+		     EHBI_DBUG_i < EHBI_DBUG_depth; \
+		     ++EHBI_DBUG_i) { \
+			EHBI_DBUG_Buf1[EHBI_DBUG_i] = ' '; \
+		} \
+		EHBI_DBUG_Buf1[EHBI_DBUG_i] = '\0'; \
+		fprintf(stderr, "\n%s\t\t%s: %ld", \
 			EHBI_DBUG_Buf1, name, val); \
 	} } while(0)
 
@@ -146,6 +162,28 @@ extern char EHBI_DBUG_Buf1[80];
 		fprintf(stderr, ")\n"); \
 	} } while(0)
 
+#define Trace_bi_bi_l(level, bi1, bi2, l3) \
+	do { if (level < EHBI_DEBUG) { \
+		Ehbi_trace_in(level); \
+		Ehbi_trace_fprintf_bi(level, bi1, "bi1"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_bi(level, bi2, "bi2"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_l(level, l3, "l3"); \
+		fprintf(stderr, ")\n"); \
+	} } while(0)
+
+#define Trace_bi_l_l(level, bi1, l2, l3) \
+	do { if (level < EHBI_DEBUG) { \
+		Ehbi_trace_in(level); \
+		Ehbi_trace_fprintf_bi(level, bi1, "bi1"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_l(level, l2, "l2"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_l(level, l3, "l3"); \
+		fprintf(stderr, ")\n"); \
+	} } while(0)
+
 #define Trace_bi_bi_bi_bi(level, bi1, bi2, bi3, bi4) \
 	do { if (level < EHBI_DEBUG) { \
 		Ehbi_trace_in(level); \
@@ -156,6 +194,32 @@ extern char EHBI_DBUG_Buf1[80];
 		Ehbi_trace_fprintf_bi(level, bi3, "bi3"); \
 		fprintf(stderr, ","); \
 		Ehbi_trace_fprintf_bi(level, bi4, "bi4"); \
+		fprintf(stderr, ")\n"); \
+	} } while(0)
+
+#define Trace_bi_bi_bi_l(level, bi1, bi2, bi3, l4) \
+	do { if (level < EHBI_DEBUG) { \
+		Ehbi_trace_in(level); \
+		Ehbi_trace_fprintf_bi(level, bi1, "bi1"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_bi(level, bi2, "bi2"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_bi(level, bi3, "bi3"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_l(level, l4, "l4"); \
+		fprintf(stderr, ")\n"); \
+	} } while(0)
+
+#define Trace_bi_bi_l_l(level, bi1, bi2, l3, l4) \
+	do { if (level < EHBI_DEBUG) { \
+		Ehbi_trace_in(level); \
+		Ehbi_trace_fprintf_bi(level, bi1, "bi1"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_bi(level, bi2, "bi2"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_l(level, l3, "l3"); \
+		fprintf(stderr, ","); \
+		Ehbi_trace_fprintf_l(level, l4, "l4"); \
 		fprintf(stderr, ")\n"); \
 	} } while(0)
 
@@ -210,14 +274,18 @@ extern char EHBI_DBUG_Buf1[80];
 
 #else /* no EHBI_DEBUG */
 
-#define Trace_bi(level, bi)
-#define Trace_bi_l(level, bi, l)
-#define Trace_bi_s(level, bi, s)
-#define Trace_bi_bi(level, bi1, bi2)
-#define Trace_bi_bi_bi(level, bi1, bi2, bi3)
-#define Trace_bi_bi_bi_bi(level, bi1, bi2, bi3, bi4)
-#define Trace_msg_s_bi(level, s, bi)
-#define Trace_msg_s_s(level, msg, val)
+#define Trace_bi(level, bi) Ehbi_noop
+#define Trace_bi_l(level, bi, l) Ehbi_noop
+#define Trace_bi_s(level, bi, s) Ehbi_noop
+#define Trace_bi_bi(level, bi1, bi2) Ehbi_noop
+#define Trace_bi_bi_bi(level, bi1, bi2, bi3) Ehbi_noop
+#define Trace_bi_bi_l(level, bi1, bi2, l3) Ehbi_noop
+#define Trace_bi_l_l(level, bi1, l2, l3) Ehbi_noop
+#define Trace_bi_bi_bi_bi(level, bi1, bi2, bi3, bi4) Ehbi_noop
+#define Trace_bi_bi_bi_l(level, bi1, bi2, bi3, l4) Ehbi_noop
+#define Trace_bi_bi_l_l(level, bi1, bi2, l3, l4) Ehbi_noop
+#define Trace_msg_s_bi(level, s, bi) Ehbi_noop
+#define Trace_msg_s_s(level, msg, val) Ehbi_noop
 #define Return_i(level, val) return val
 #define Return_s(level, val) return val
 #define Return_void(level) return
@@ -236,21 +304,21 @@ extern char EHBI_DBUG_Buf1[80];
 		} \
 	} while(0)
 
-#define Ehbi_struct_is_not_null_e(level, bi, err) \
+#define Ehbi_struct_is_not_null_e(level, bi, err, err_rv) \
 	do { \
 		if (bi == NULL) { \
 			Ehbi_log_error0("Null argument(s)"); \
 			if (err) { \
 				*err = EHBI_NULL_ARGS; \
 			} \
-			Return_i(level, 0); \
+			Return_i(level, err_rv); \
 		} \
 		if (bi->bytes == NULL) { \
 			Ehbi_log_error0("Null bytes[]"); \
 			if (err) { \
 				*err = EHBI_NULL_BYTES; \
 			} \
-			Return_i(level, 0); \
+			Return_i(level, err_rv); \
 		} \
 	} while(0)
 

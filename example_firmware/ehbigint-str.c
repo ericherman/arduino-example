@@ -42,9 +42,7 @@ int ehbi_set_binary_string(struct ehbigint *bi, const char *str, size_t len)
 
 	Trace_bi_s(8, bi, str);
 
-#ifndef EBA_SKIP_ENDIAN
 	eba.endian = eba_big_endian;
-#endif
 	eba.bits = NULL;
 	eba.size_bytes = 0;
 
@@ -78,7 +76,9 @@ int ehbi_set_binary_string(struct ehbigint *bi, const char *str, size_t len)
 	for (i = 0, j = len - 1; i < len; ++i, --j) {
 		ehbi_eba_err = EHBI_SUCCESS;
 		eba_set(&eba, i, str[j] == '1' ? 1 : 0);
-		err = err || ehbi_eba_err;
+		if (!err) {
+			err = ehbi_eba_err;
+		}
 	}
 
 	ehbi_unsafe_reset_bytes_used(bi);
@@ -144,9 +144,9 @@ int ehbi_set_hex_string(struct ehbigint *bi, const char *str, size_t str_len)
 	}
 
 	/* let's just zero out the rest of the bytes, for easier debug */
-	while (i-- > 0) {
-		bi->bytes[i] = 0x00;
-	}
+	Eba_memset(bi->bytes, 0x00, i);
+
+	ehbi_unsafe_reset_bytes_used(bi);
 
 	Trace_msg_s_bi(8, "end", bi);
 	Return_i(8, EHBI_SUCCESS);
@@ -213,9 +213,7 @@ char *ehbi_to_binary_string(const struct ehbigint *bi, char *buf,
 
 	Trace_bi(8, bi);
 
-#ifndef EBA_SKIP_ENDIAN
 	eba.endian = eba_big_endian;
-#endif
 	eba.bits = NULL;
 	eba.size_bytes = 0;
 
